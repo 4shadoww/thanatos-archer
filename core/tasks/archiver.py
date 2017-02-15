@@ -43,7 +43,7 @@ class DiscussionPage:
 	counter = None
 
 class Config:
-	archive = "Arkisto%(counter)d"
+	archive = "Arkisto %(counter)d"
 	algo = "30d"
 	counter = None
 	maxarchivesize = "100kt"
@@ -98,14 +98,13 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["39/*/*/*", "40/*/*/*"]
+	time = ["00/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
 
 	# Archiver config
-	#template_name = "Käyttäjä:4shadowwBOT/config"
-	template_name = "Käyttäjä:HarrivBOT/config"
+	template_names = ["Käyttäjä:HarrivBOT/config", "Käyttäjä:4shadowwBOT/config"]
 
 	# Template page object
 	template_page = None
@@ -165,9 +164,9 @@ class ThanatosTask:
 					self.removefromlist(thread.content, dpage)
 					count -= 1
 
-	def getpages(self):
+	def getpages(self, template):
 		site = pywikibot.Site()
-		transclusion_page = pywikibot.Page(site, self.template_name, ns=10)
+		transclusion_page = pywikibot.Page(site, template, ns=10)
 		self.template_page = transclusion_page
 		return transclusion_page.getReferences(onlyTemplateInclusion=True, follow_redirects=False, namespaces=[])
 
@@ -353,22 +352,23 @@ class ThanatosTask:
 			self.archive(dpage, page)
 
 	def run(self):
-		pages = self.getpages()
-		site = pywikibot.Site()
-		#pages = [pywikibot.Page(site, "Keskustelu käyttäjästä:Einottaja")]
-		#self.template_page = pywikibot.Page(site, self.template_name)
-		for page in pages:
-			printlog("archiver: checking", page)
-			try:
-				dpage = DiscussionPage()
-				dpage.name = page.title()
-				dpage.config = self.load_config(page, site)
-				dpage.counter = dpage.config.counter
-				self.analyze(page, dpage)
-			except KeyboardInterrupt:
-				return
-			except UnsupportedConfig:
-				printlog("archiver: skipped", page.title(), "because uc")
-			except:
-				error = traceback.format_exc()
-				printlog("unknown error:\n"+error)
+		for template in self.template_names:
+			pages = self.getpages(template)
+			site = pywikibot.Site()
+			#pages = [pywikibot.Page(site, "")]
+			#self.template_page = pywikibot.Page(site, self.template_name)
+			for page in pages:
+				printlog("archiver: checking", page)
+				try:
+					dpage = DiscussionPage()
+					dpage.name = page.title()
+					dpage.config = self.load_config(page, site)
+					dpage.counter = dpage.config.counter
+					self.analyze(page, dpage)
+				except KeyboardInterrupt:
+					return
+				except UnsupportedConfig:
+					printlog("archiver: skipped", page.title(), "because uc")
+				except:
+					error = traceback.format_exc()
+					printlog("unknown error:\n"+error)
