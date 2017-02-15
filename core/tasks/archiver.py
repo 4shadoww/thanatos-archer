@@ -1,5 +1,3 @@
-# - *- coding: utf- 8 - *-
-
 from core.taskcore import *
 import re
 from pywikibot import textlib
@@ -100,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["*/*/*/*"]
+	time = ["00/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")

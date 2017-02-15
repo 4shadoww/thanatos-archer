@@ -1,5 +1,3 @@
-# - *- coding: utf- 8 - *-
-
 import datetime
 from core import config
 from core import colors
