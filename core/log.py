@@ -18,8 +18,8 @@ def printlog(*message, end='\n'):
 	time = datetime.datetime.now()
 	line = str(time)+' '+finalmessage+end
 	if config.enable_log == True:
-		logfile.write(line)
-	sys.stdout.write(line)
+		logfile.write(line.encode('utf-8'))
+	sys.stdout.write(line.encode('utf-8'))
 
 def log(*message, end='\n'):
 	finalmessage = ""
@@ -31,7 +31,7 @@ def log(*message, end='\n'):
 	if config.enable_log == True:
 		time = datetime.datetime.now()
 		line = str(time)+' '+finalmessage+end
-		logfile.write(line)
+		logfile.write(line.encode('utf-8'))
 
 warnings = []
 
