@@ -1,3 +1,5 @@
+# - *- coding: utf- 8 - *-
+
 from core.taskcore import *
 import re
 from pywikibot import textlib

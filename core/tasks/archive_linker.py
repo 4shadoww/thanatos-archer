@@ -1,3 +1,4 @@
+# - *- coding: utf- 8 - *-
 from core.taskcore import *
 import traceback
 from tinydb import TinyDB, Query
