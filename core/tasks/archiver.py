@@ -98,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["00/*/*/*"]
+	time = ["*/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
@@ -251,10 +251,13 @@ class ThanatosTask:
 
 		for i in range(0, len(dpage.toarchive)):
 			if len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or not using_counter:
-				if i == 0:
-					page.text += "\n\n"
-				page.text += '\n'.join(dpage.toarchive[0].content)+"\n"
-				dpage.toarchive.pop(0)
+				if dpage.toarchive[0].content in page.text:
+					dpage.toarchive.pop(0)
+				else:
+					if i == 0:
+						page.text += "\n\n"
+					page.text += '\n'.join(dpage.toarchive[0].content)+"\n"
+					dpage.toarchive.pop(0)
 				x += 1
 
 			else:
@@ -353,6 +356,7 @@ class ThanatosTask:
 
 	def run(self):
 		for template in self.template_names:
+			self.template_name = template
 			pages = self.getpages(template)
 			site = pywikibot.Site()
 			#pages = [pywikibot.Page(site, "")]
