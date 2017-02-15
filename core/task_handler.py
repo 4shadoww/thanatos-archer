@@ -1,6 +1,7 @@
 # Python modules
 from time import sleep
 import traceback
+import datetime
 
 # Core modules
 from core import config
@@ -17,15 +18,23 @@ class TaskHandler:
 
 	def main(self):
 		# Loop
+		oldtimenow = datetime.datetime.now()
 		while True:
+			timenow = datetime.datetime.now()
 			for task in self.tasks:
 				try:
-					if etc.check_time(task):
+					if etc.check_time(task, timenow, oldtimenow):
 						printlog("executing task:",task.name)
 						task.run()
 				except:
 					error = traceback.format_exc()
 					printlog("unknown error:\n"+error)
 
-			print("sleeping for", config.sleep_time, "seconds")
-			sleep(config.sleep_time)
+			after_run = datetime.datetime.now()
+			oldtimenow = timenow
+			sleeptime = config.sleep_time
+			if sleeptime > 59:
+				sleeptime = 59
+			if after_run - timenow < datetime.timedelta(seconds=sleeptime):
+				print("sleeping for", config.sleep_time, "seconds")
+				sleep(config.sleep_time)

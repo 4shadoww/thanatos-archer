@@ -5,6 +5,7 @@ import datetime
 import pywikibot
 from tinydb import TinyDB, Query
 import traceback
+import datetime
 
 class UnsupportedConfig(Exception):
 	pass
@@ -97,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["*/*/*/*", "30/*/*/*"]
+	time = ["39/*/*/*", "40/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
@@ -177,8 +178,9 @@ class ThanatosTask:
 				for param in tpl[1]:
 					item, value = param.split('=', 1)
 					if item == "archive":
+						now = datetime.datetime.now()
 						if "%(year)d" in value:
-							raise UnsupportedConfig("invalid archive param")
+							value = value.replace("%(year)d", str(now.year))
 						elif "%(month)d" in value:
 							raise UnsupportedConfig("invalid archive param")
 						elif "%(monthname)s" in value:
@@ -238,13 +240,18 @@ class ThanatosTask:
 	def addthread2archive(self, dpage, counter):
 		x = 0
 		site = pywikibot.Site()
-		page = pywikibot.Page(site, dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
+		if "%(counter)d" in dpage.config.archive:
+			page = pywikibot.Page(site, dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
+			using_counter = True
+		else:
+			page = pywikibot.Page(site, dpage.name+"/"+dpage.config.archive)
+			using_counter = False
 
 		if page.exists() == False or page.text == "":
 			page.text += dpage.config.archiveheader
 
 		for i in range(0, len(dpage.toarchive)):
-			if len(page.text) < self.str2bytes(dpage.config.maxarchivesize):
+			if len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or not using_counter:
 				if i == 0:
 					page.text += "\n\n"
 				page.text += '\n'.join(dpage.toarchive[0].content)+"\n"
@@ -348,7 +355,7 @@ class ThanatosTask:
 	def run(self):
 		pages = self.getpages()
 		site = pywikibot.Site()
-		#pages = [pywikibot.Page(site, "Wikipedia:Kahvihuone (kielenhuolto)")]
+		#pages = [pywikibot.Page(site, "Keskustelu käyttäjästä:Einottaja")]
 		#self.template_page = pywikibot.Page(site, self.template_name)
 		for page in pages:
 			printlog("archiver: checking", page)

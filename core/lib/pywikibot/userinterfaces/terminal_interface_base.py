@@ -137,7 +137,13 @@ class UI:
             self.printNonColorized(text, targetStream)
 
     def output(self, text, toStdout=False, targetStream=None):
-        return
+        if "Sleeping for" in text:
+            return
+        elif "FamilyMaintenanceWarning" in text:
+            return
+        elif "Page" in text and "saved" in text:
+            return
+            
         """
         Output text to a stream.
 

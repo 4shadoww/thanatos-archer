@@ -2,7 +2,7 @@
 lang = "fi"
 
 # Sleep time
-sleep_time = 5
+sleep_time = 60
 
 # Enable log
 enable_log = False
