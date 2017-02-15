@@ -1,7 +1,7 @@
 user-config.py
 __pycache__/
 apicache/
-core/log/
+core/log/*.log
 throttle.ctrl
 pywikibot.lwp
 core/articles/*
