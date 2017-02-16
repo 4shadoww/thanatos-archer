@@ -98,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["00/*/*/*"]
+	time = ["*/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
@@ -291,10 +291,11 @@ class ThanatosTask:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(data[1])+" "+self.comments[config.lang+"02m"]+" [["+dpage.name+"]]"])
 			else:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"02"]+" [["+dpage.name+"]]"])
-			archives.append(data[0].title())
-			printlog("archiver: saving archive "+dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
-			wikipedia_worker.savepage(data[0], data[0].text, comment)
-			counter = data[2]
+			if data[0].text != '\n'.join(dpage.text):
+				archives.append(data[0].title())
+				printlog("archiver: saving archive "+dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
+				wikipedia_worker.savepage(data[0], data[0].text, comment)
+				counter = data[2]
 
 		if usingdb:
 			self.db.update({"counter": counter}, exet.name == dpage.name)
