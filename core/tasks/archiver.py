@@ -251,7 +251,7 @@ class ThanatosTask:
 
 		for i in range(0, len(dpage.toarchive)):
 			if len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or not using_counter:
-				if dpage.toarchive[0].content in page.text:
+				if '\n'.join(dpage.toarchive[0].content) in page.text:
 					dpage.toarchive.pop(0)
 				else:
 					if i == 0:
