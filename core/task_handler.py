@@ -18,9 +18,11 @@ class TaskHandler:
 
 	def main(self):
 		# Loop
-		oldtimenow = datetime.datetime.now()
+		oldtimenow = None
 		while True:
 			timenow = datetime.datetime.now()
+			if not oldtimenow:
+				oldtimenow = timenow
 			for task in self.tasks:
 				try:
 					if etc.check_time(task, timenow, oldtimenow):

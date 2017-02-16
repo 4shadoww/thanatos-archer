@@ -27,13 +27,16 @@ class LinkGenerator:
 class ThanatosTask:
 	name = "archive_linker"
 	# Time min/hour/day/month
-	time = ["*/*/*/*"]
+	time = ["00/*/*/*"]
 
 	# Template name
 	template_name = "Käyttäjä:4shadowwBOT/linker"
 
 	# Template Page
 	template_page = None
+
+	# Execute on start
+	exeonstart = True
 
 	# Html tags
 	stag = "<div class=4linker>"

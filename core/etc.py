@@ -4,7 +4,10 @@ import datetime
 # Import core modules
 from core.log import *
 
-def check(time, timenow, oldtimenow):
+def check(time, timenow, oldtimenow, task):
+
+	if timenow == oldtimenow and task.exeonstart:
+		return True
 
 	tasktime = time.split("/")
 
@@ -45,4 +48,4 @@ def check(time, timenow, oldtimenow):
 
 def check_time(task, timenow, oldtimenow):
 	for time in task.time:
-		return check(time, timenow, oldtimenow)
+		return check(time, timenow, oldtimenow, task)

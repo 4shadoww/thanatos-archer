@@ -98,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["*/*/*/*"]
+	time = ["00/*/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
@@ -108,6 +108,9 @@ class ThanatosTask:
 
 	# Template page object
 	template_page = None
+
+	# Execute on start
+	exeonstart = True
 
 	def str2time(self, string):
 		if string.endswith('d'):
