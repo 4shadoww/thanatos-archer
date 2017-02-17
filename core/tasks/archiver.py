@@ -221,10 +221,13 @@ class ThanatosTask:
 		return config
 
 	def str2bytes(self, string):
+		factor = 0
+		if "kt" in string or "KT" in string or "kb" in string or "KB":
+			factor = 1024
 		string = string.replace("K", "").replace("k", "")
 		string = string.replace("T", "").replace("t", "")
 		string = string.replace("B", "").replace("b", "")
-		return int(string)*1024
+		return int(string)*factor
 
 	def updatecounter(self, template, counter):
 		template = template.split("\n")
