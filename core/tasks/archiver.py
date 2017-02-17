@@ -222,7 +222,7 @@ class ThanatosTask:
 
 	def str2bytes(self, string):
 		factor = 0
-		if "kt" in string or "KT" in string or "kb" in string or "KB":
+		if "k" in string or "K" in string:
 			factor = 1024
 		string = string.replace("K", "").replace("k", "")
 		string = string.replace("T", "").replace("t", "")

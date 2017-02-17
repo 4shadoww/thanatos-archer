@@ -20,6 +20,7 @@ class TaskHandler:
 		# Loop
 		oldtimenow = None
 		while True:
+			printsleep = True
 			timenow = datetime.datetime.now()
 			if not oldtimenow:
 				oldtimenow = timenow
@@ -28,6 +29,7 @@ class TaskHandler:
 					if etc.check_time(task, timenow, oldtimenow):
 						printlog("executing task:",task.name)
 						task.run()
+						printsleep = True
 				except:
 					error = traceback.format_exc()
 					printlog("unknown error:\n"+error)
@@ -38,5 +40,6 @@ class TaskHandler:
 			if sleeptime > 59:
 				sleeptime = 59
 			if after_run - timenow < datetime.timedelta(seconds=sleeptime):
-				print("sleeping for", config.sleep_time, "seconds")
+				if printsleep:
+					printlog("now sleeping...")
 				sleep(config.sleep_time)
