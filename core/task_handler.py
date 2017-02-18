@@ -19,8 +19,8 @@ class TaskHandler:
 	def main(self):
 		# Loop
 		oldtimenow = None
+		printsleep = True
 		while True:
-			printsleep = True
 			timenow = datetime.datetime.now()
 			if not oldtimenow:
 				oldtimenow = timenow
