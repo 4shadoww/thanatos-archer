@@ -42,4 +42,5 @@ class TaskHandler:
 			if after_run - timenow < datetime.timedelta(seconds=sleeptime):
 				if printsleep:
 					printlog("now sleeping...")
+					printsleep = False
 				sleep(config.sleep_time)
