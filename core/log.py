@@ -6,7 +6,7 @@ import sys
 time = datetime.datetime.now()
 logfilename = str(time)
 if config.enable_log == True:
-	logfile = open('core/log/'+logfilename+'.log', 'a', 0)
+	logfile = open('core/log/'+logfilename+'.log', 'a')
 
 def printlog(*message, end='\n'):
 	finalmessage = ""
@@ -18,6 +18,7 @@ def printlog(*message, end='\n'):
 	time = datetime.datetime.now()
 	line = str(time)+' '+finalmessage+end
 	if config.enable_log == True:
+		logfile.flush()
 		logfile.write(line)
 	sys.stdout.write(line)
 
@@ -31,6 +32,7 @@ def log(*message, end='\n'):
 	if config.enable_log == True:
 		time = datetime.datetime.now()
 		line = str(time)+' '+finalmessage+end
+		logfile.flush()
 		logfile.write(line)
 
 warnings = []
