@@ -143,7 +143,8 @@ class ThanatosTask:
 				if apage.exists() and apage.text != "":
 					must_update = True
 			if must_update:
-				printlog("archive linker: updating links to", page)
+				printlog("archive linker: checking links for", page)
+				oldtext = page.text
 				links = self.get_links(page, site, config)
 				lg = LinkGenerator()
 				linktable = lg.generate(config, links)
@@ -153,7 +154,9 @@ class ThanatosTask:
 					comment = create_comment.comment([self.comments[config.lang+"00m"]])
 				else:
 					comment = create_comment.comment([self.comments[config.lang+"00"]])
-				wikipedia_worker.savepage(page, page.text, comment)
+				if oldtext != page.text:
+					printlog("archive linker: updating links for", page)
+					wikipedia_worker.savepage(page, page.text, comment)
 
 	def run(self):
 		pages = self.getpages()
