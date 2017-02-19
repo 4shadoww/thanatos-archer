@@ -6,7 +6,7 @@ import sys
 time = datetime.datetime.now()
 logfilename = str(time)
 if config.enable_log == True:
-	logfile = open('core/log/'+logfilename+'.log', 'a')
+	logfile = open('core/log/'+logfilename+'.log', 'a', 0)
 
 def printlog(*message, end='\n'):
 	finalmessage = ""
