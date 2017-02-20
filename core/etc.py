@@ -11,20 +11,20 @@ def check(time, timenow, oldtimenow, task):
 
 	tasktime = time.split("/")
 
-	# tasktimeobj = timenow
-	#
-	# for i, value in enumerate(tasktime):
-	# 	if i == 0 and value != "*":
-	# 		tasktimeobj = tasktimeobj.replace(minute = int(value))
-	# 	elif i == 1 and value != "*":
-	# 		tasktimeobj = tasktimeobj.replace(hour = int(value))
-	# 	elif i == 2 and value != "*":
-	# 		tasktimeobj = tasktimeobj.replace(day = int(value))
-	# 	if i == 3 and value != "*":
-	# 		tasktimeobj = tasktimeobj.replace(month = int(value))
-	#
-	# if tasktimeobj > oldtimenow and tasktimeobj < timenow:
-	# 	return True
+	tasktimeobj = timenow
+
+	for i, value in enumerate(tasktime):
+		if i == 0 and value != "*":
+			tasktimeobj = tasktimeobj.replace(minute = int(value))
+		elif i == 1 and value != "*":
+			tasktimeobj = tasktimeobj.replace(hour = int(value))
+		elif i == 2 and value != "*":
+			tasktimeobj = tasktimeobj.replace(day = int(value))
+		if i == 3 and value != "*":
+			tasktimeobj = tasktimeobj.replace(month = int(value))
+
+	if tasktimeobj > oldtimenow and tasktimeobj < timenow:
+		return True
 
 	meani = 0
 	meanic = 0
@@ -48,4 +48,6 @@ def check(time, timenow, oldtimenow, task):
 
 def check_time(task, timenow, oldtimenow):
 	for time in task.time:
-		return check(time, timenow, oldtimenow, task)
+		if check(time, timenow, oldtimenow, task):
+			return True
+		return False
