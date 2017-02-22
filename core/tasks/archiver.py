@@ -98,7 +98,7 @@ class ThanatosTask:
 
 	name = "archiver"
 	# Time min/hour/day/month
-	time = ["00/12/*/*", "00/18/*/*", "00/00/*/*", "00/05/*/*"]
+	time = ["00/05/*/*", "00/12/*/*", "00/18/*/*", "00/00/*/*"]
 
 	# Database
 	db = TinyDB("core/db/taskdb/archiver.json")
