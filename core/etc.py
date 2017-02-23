@@ -50,4 +50,4 @@ def check_time(task, timenow, oldtimenow):
 	for time in task.time:
 		if check(time, timenow, oldtimenow, task):
 			return True
-		return False
+	return False
