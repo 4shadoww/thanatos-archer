@@ -7,7 +7,7 @@ import re
 
 class Config:
 	archive = "Arkisto %(counter)d"
-	style = "oneline"
+	style = "simple"
 	linktext = "Arkisto, osa %(counter)d"
 
 class LinkGenerator:
