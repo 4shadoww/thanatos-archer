@@ -8,3 +8,4 @@ core/articles/*
 core/db/*.json
 core/db/taskdb/*.json
 logs/
+test.py

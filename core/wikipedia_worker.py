@@ -1,6 +1,6 @@
 import pywikibot
 from pywikibot import pagegenerators
-from core import config
+import core.config
 
 def loadpage(page):
 	try:
@@ -14,7 +14,7 @@ def loadpage(page):
 	return site, wpage
 
 def savepage(wpage, text, comment):
-	if config.test == False:
+	if core.config.test == False:
 		try:
 			wpage.text = text
 			wpage.save(comment)

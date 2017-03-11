@@ -7,22 +7,50 @@ import re
 
 class Config:
 	archive = "Arkisto %(counter)d"
-	style = "simple"
+	style = "oneline"
 	linktext = "Arkisto, osa %(counter)d"
 
 class LinkGenerator:
-	def simple(self, links):
+	def simple(self, links, config):
 		counter = 1
 		string = ""
 		for link in links:
 			string += "* [["+link+"|"+config.linktext.replace("%(counter)d", str(counter))+"]]\n"
 			counter += 1
 		return string
+
+	def oneline(self, links, config):
+		counter = 1
+		string = ""
+		for link in links:
+			if counter != len(links):
+				string += "[["+link+"|"+config.linktext.replace("%(counter)d", str(counter))+"]] • "
+			else:
+				string += "[["+link+"|"+config.linktext.replace("%(counter)d", str(counter))+"]]"
+			counter += 1
+		return string
+
+	def box(self, links, config):
+		counter = 1
+		string = "{| class=\"infobox\" align=\"right\" style=\"text-align:center\"\n|-\n! colspan=\"3\" | [[Kuva:Filing cabinet icon.svg|50px|Arkistot]]\n|-\n"
+
+		for link in links:
+			string += "| [["+link+"|"+config.linktext.replace("%(counter)d", str(counter))+"]]\n"
+			if counter != len(links):
+				string += "|-\n"
+			counter += 1
+		string += "|}\n"
+		return string
+
 	def generate(self, config, links):
 		if config.style == "simple":
-			return self.simple(links)
+			return self.simple(links, config)
+		elif config.style == "box":
+			return self.box(links, config)
+		elif config.style == "oneline":
+			return self.oneline(links, config)
 		else:
-		 	return self.simple(links)
+		 	return self.simple(links, config)
 
 class ThanatosTask:
 	name = "archive_linker"

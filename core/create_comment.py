@@ -1,4 +1,4 @@
-from core import config
+import core.config
 
 lang = {
 	"fi_bot": "Botti",
@@ -11,7 +11,7 @@ def comment(comments):
 	i = 0
 	for comment in comments:
 		if i == 0:
-			full_comment += lang[config.lang+"_bot"]+" "
+			full_comment += lang[core.config.lang+"_bot"]+" "
 
 		full_comment += comment
 
@@ -19,7 +19,7 @@ def comment(comments):
 			full_comment += "."
 
 		elif i == len(comments)-2:
-			full_comment += ", "+lang[config.lang+"_and"]+" "
+			full_comment += ", "+lang[core.config.lang+"_and"]+" "
 
 		else:
 			full_comment += ", "
