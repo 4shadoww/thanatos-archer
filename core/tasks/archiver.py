@@ -369,17 +369,18 @@ class ThanatosTask:
 			#pages = [pywikibot.Page(site, "")]
 			#self.template_page = pywikibot.Page(site, self.template_name)
 			for page in pages:
-				printlog("archiver: checking", page)
-				try:
-					dpage = DiscussionPage()
-					dpage.name = page.title()
-					dpage.config = self.load_config(page, site)
-					dpage.counter = dpage.config.counter
-					self.analyze(page, dpage)
-				except KeyboardInterrupt:
-					return
-				except UnsupportedConfig:
-					printlog("archiver: skipped", page.title(), "because uc")
-				except:
-					error = traceback.format_exc()
-					printlog("unknown error:\n"+error)
+				if page.botMayEdit() and page.canBeEdited():
+					printlog("archiver: checking", page)
+					try:
+						dpage = DiscussionPage()
+						dpage.name = page.title()
+						dpage.config = self.load_config(page, site)
+						dpage.counter = dpage.config.counter
+						self.analyze(page, dpage)
+					except KeyboardInterrupt:
+						return
+					except UnsupportedConfig:
+						printlog("archiver: skipped", page.title(), "because uc")
+					except:
+						error = traceback.format_exc()
+						printlog("unknown error:\n"+error)

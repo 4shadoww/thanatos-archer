@@ -191,12 +191,13 @@ class ThanatosTask:
 		site = pywikibot.Site()
 		#pages = [pywikibot.Page(site, "Keskustelu käyttäjästä:4shadoww")]
 		for page in pages:
-			printlog("archive linker: checking", page)
-			try:
-				config = self.load_config(page, site)
-				self.link(page, site, config)
-			except KeyboardInterrupt:
-				return
-			except:
-				error = traceback.format_exc()
-				printlog("unknown error:\n"+error)
+			if page.botMayEdit() and page.canBeEdited():
+				printlog("archive linker: checking", page)
+				try:
+					config = self.load_config(page, site)
+					self.link(page, site, config)
+				except KeyboardInterrupt:
+					return
+				except:
+					error = traceback.format_exc()
+					printlog("unknown error:\n"+error)
