@@ -48,7 +48,7 @@ class Config:
 	counter = None
 	maxarchivesize = "100kt"
 	minthreadsleft = 5
-	minthreadstoarchive = 0
+	minthreadstoarchive = 3
 	archiveheader = "{{Arkisto}}"
 	counter = None
 
@@ -332,7 +332,6 @@ class ThanatosTask:
 							% (template_title_regex(self.template_page).pattern), re.DOTALL)
 			match = rx.search(page.text).group(0)
 			newtemplate = self.updatecounter(match, dpage.counter)
-			print(newtemplate)
 			dpage.text = '\n'.join(dpage.text).replace(match, newtemplate).split("\n")
 		printlog("archiver: saving page")
 		wikipedia_worker.savepage(page, '\n'.join(dpage.text), comment)
