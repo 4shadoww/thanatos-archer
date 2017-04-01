@@ -61,3 +61,15 @@ def debug(*message, end='\n'):
 
 	sys.stdout.write(finalmessage+end)
 	log(finalmessage)
+
+def crashreport(*message):
+	crashfile = open('core/log/crashreport.log', 'a')
+	finalmessage = ""
+	for l, mes in enumerate(message):
+		finalmessage += str(mes)
+		if l != len(message):
+			finalmessage += " "
+	time = datetime.datetime.now()
+	line = str(time)+' '+finalmessage+end
+	crashfile.flush()
+	crashfile.write(line)
