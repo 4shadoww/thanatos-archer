@@ -70,6 +70,6 @@ def crashreport(*message):
 		if l != len(message):
 			finalmessage += " "
 	time = datetime.datetime.now()
-	line = str(time)+' '+finalmessage+end
+	line = str(time)+' '+finalmessage+"\n"
 	crashfile.flush()
 	crashfile.write(line)

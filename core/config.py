@@ -5,7 +5,7 @@ lang = "fi"
 sleep_time = 60
 
 # Enable log
-enable_log = True
+enable_log = False
 
 # Enable debug
 debug = True
