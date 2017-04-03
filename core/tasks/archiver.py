@@ -64,7 +64,6 @@ class Thread:
 	def getdate(self, ts):
 		for line in self.content:
 			linedate = ts.timestripper(line)
-			print(linedate)
 			if linedate:
 				if not self.timestamp:
 					self.timestamp = linedate
@@ -364,9 +363,9 @@ class ThanatosTask:
 	def run(self):
 		for template in self.template_names:
 			self.template_name = template
-			#pages = self.getpages(template)
+			pages = self.getpages(template)
 			site = pywikibot.Site()
-			pages = [pywikibot.Page(site, "User_talk:4shadoww/test2")]
+			#pages = [pywikibot.Page(site, "User_talk:4shadoww/test2")]
 			#self.template_page = pywikibot.Page(site, self.template_name)
 			for page in pages:
 				if page.botMayEdit() and page.canBeEdited():
