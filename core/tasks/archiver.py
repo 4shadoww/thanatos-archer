@@ -48,7 +48,7 @@ class Config:
 	counter = None
 	maxarchivesize = "100kt"
 	minthreadsleft = 5
-	minthreadstoarchive = 3
+	minthreadstoarchive = 2
 	archiveheader = "{{Arkisto}}"
 	counter = None
 
