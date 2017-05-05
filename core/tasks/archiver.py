@@ -112,6 +112,8 @@ class ThanatosTask:
 	# Execute on start
 	exeonstart = True
 
+	ignore = ["Keskustelu käyttäjästä:Parantaja asiantuntija"]
+
 	def str2time(self, string):
 		if string.endswith('d'):
 			return datetime.timedelta(days=int(string[:-1]))
@@ -368,7 +370,10 @@ class ThanatosTask:
 			#pages = [pywikibot.Page(site, "User_talk:4shadoww/test2")]
 			#self.template_page = pywikibot.Page(site, self.template_name)
 			for page in pages:
-				if page.botMayEdit() and page.canBeEdited():
+				if page.title() in self.ignore:
+					print("ignored", page.title())
+
+				elif page.botMayEdit() and page.canBeEdited():
 					printlog("archiver: checking", page)
 					try:
 						dpage = DiscussionPage()
