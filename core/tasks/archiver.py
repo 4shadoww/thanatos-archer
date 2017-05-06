@@ -113,7 +113,7 @@ class ThanatosTask:
 	# Execute on start
 	exeonstart = True
 
-	ignore = ["Keskustelu käyttäjästä:Parantaja asiantuntija"]
+	ignore = []
 
 	def str2time(self, string):
 		if string.endswith('d'):
