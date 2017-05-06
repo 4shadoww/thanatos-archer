@@ -221,7 +221,7 @@ class ThanatosTask:
 							if int(algo.replace("d", "").replace("D", "")) > 0:
 								config.algo = algo
 						else:
-							if int(value) > 0:
+							if int(value.replace("d", "").replace("D", "")) > 0:
 								config.algo = value
 					elif item == "maxarchivesize":
 						try:
