@@ -44,6 +44,7 @@ class DiscussionPage:
 
 class Config:
 	archive = "Arkisto %(counter)d"
+	using_year = False
 	algo = "30d"
 	counter = None
 	maxarchivesize = "100kt"
@@ -155,8 +156,8 @@ class ThanatosTask:
 				elif len(dpage.text)-1 == l:
 					count += 1
 			return count
-	def parse_thread_config(self, value):
-		return value.replace("t", "").replace("T", "")
+	def parse_mas_config(self, value):
+		return value.replace("t", "").replace("T", "").replace("M", "").replace("m", "").replace("K", "").replace("k", "").replace("B", "").replace("b", "")
 
 	def removefromlist(self, oldthread, dpage):
 		confirmed = False
@@ -205,6 +206,7 @@ class ThanatosTask:
 						now = datetime.datetime.now()
 						if "%(year)d" in value:
 							value = value.replace("%(year)d", str(now.year))
+							config.using_year = True
 						elif "%(month)d" in value:
 							raise UnsupportedConfig("invalid archive param")
 						elif "%(monthname)s" in value:
@@ -215,20 +217,28 @@ class ThanatosTask:
 						config.archive = value.replace(page.title()+"/", "").replace("{{FULLPAGENAMEE}}/", "")
 					elif item ==  "algo":
 						if "old(" in value:
-							config.algo = re.findall(r"old\((.*?)\)", value)[0]
+							algo = re.findall(r"old\((.*?)\)", value)[0]
+							if int(algo.replace("d", "").replace("D", "")) > 0:
+								config.algo = algo
 						else:
-							config.algo = value
+							if int(value) > 0:
+								config.algo = value
 					elif item == "maxarchivesize":
-						if "t" in value or "T" in value:
-							config.maxarchivesize = value
-							config.threads = True
-						else:
-							config.maxarchivesize = value
-							config.threads = False
+						try:
+							if int(self.parse_mas_config(value)) > 0:
+								if "t" in value or "T" in value:
+									config.maxarchivesize = value
+									config.threads = True
+								else:
+									config.maxarchivesize = value
+									config.threads = False
+						except ValueError:
+							printlog("invalid maxarchivesize")
 
 					elif item == "minthreadsleft":
 						try:
-							config.minthreadsleft = int(value)
+							if int(value) >= 0:
+								config.minthreadsleft = int(value)
 						except ValueError:
 							printlog("invalid minthreadsleft")
 					elif item == "minthreadstoarchive":
@@ -254,6 +264,7 @@ class ThanatosTask:
 			factor = 1024
 		if "m" in string or "M" in string:
 			factor = 1048576
+		string = string.replace("M", "").replace("m", "")
 		string = string.replace("K", "").replace("k", "")
 		string = string.replace("B", "").replace("b", "")
 		return int(string)*factor
@@ -285,7 +296,7 @@ class ThanatosTask:
 			page.text += dpage.config.archiveheader
 
 		for i in range(0, len(dpage.toarchive)):
-			if not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_thread_config(dpage.config.maxarchivesize):
+			if dpage.config.using_year or not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(dpage.config.maxarchivesize):
 				if '\n'.join(dpage.toarchive[0].content) in page.text:
 					dpage.toarchive.pop(0)
 				else:
