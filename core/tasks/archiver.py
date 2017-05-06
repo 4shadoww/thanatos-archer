@@ -47,10 +47,11 @@ class Config:
 	algo = "30d"
 	counter = None
 	maxarchivesize = "100kt"
+	threads = None
 	minthreadsleft = 5
 	minthreadstoarchive = 2
 	archiveheader = "{{Arkisto}}"
-	counter = None
+
 
 class Thread:
 	content = None
@@ -138,6 +139,25 @@ class ThanatosTask:
 			elif len(dpage.text)-1 == l:
 				dpage.threads.append(Thread(dpage.text[start:l+1], ts))
 
+	def threads_count(self, text):
+			site = pywikibot.Site()
+			start = 0
+			cut = False
+			count = 0
+			ts = textlib.TimeStripper(site=site)
+			for l in  range(0, len(dpage.text)):
+				thread_header = re.search('^== *([^=].*?) *== *$', dpage.text[l])
+				if thread_header:
+					if cut == True:
+						count += 1
+					start = l
+					cut = True
+				elif len(dpage.text)-1 == l:
+					count += 1
+			return count
+	def parse_thread_config(self, value):
+		return value.replace("t", "").replace("T", "")
+
 	def removefromlist(self, oldthread, dpage):
 		confirmed = False
 		i = 0
@@ -199,7 +219,13 @@ class ThanatosTask:
 						else:
 							config.algo = value
 					elif item == "maxarchivesize":
-						config.maxarchivesize = value
+						if "t" in value or "T" in value:
+							config.maxarchivesize = value
+							config.threads = True
+						else:
+							config.maxarchivesize = value
+							config.threads = False
+
 					elif item == "minthreadsleft":
 						try:
 							config.minthreadsleft = int(value)
@@ -226,8 +252,9 @@ class ThanatosTask:
 		factor = 0
 		if "k" in string or "K" in string:
 			factor = 1024
+		if "m" in string or "M" in string:
+			factor = 1048576
 		string = string.replace("K", "").replace("k", "")
-		string = string.replace("T", "").replace("t", "")
 		string = string.replace("B", "").replace("b", "")
 		return int(string)*factor
 
@@ -258,7 +285,7 @@ class ThanatosTask:
 			page.text += dpage.config.archiveheader
 
 		for i in range(0, len(dpage.toarchive)):
-			if len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or not using_counter:
+			if not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_thread_config(dpage.config.maxarchivesize):
 				if '\n'.join(dpage.toarchive[0].content) in page.text:
 					dpage.toarchive.pop(0)
 				else:
