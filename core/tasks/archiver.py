@@ -425,4 +425,5 @@ class ThanatosTask:
 						printlog("archiver: skipped", page.title(), "because uc")
 					except:
 						error = traceback.format_exc()
+						crashreport(error)
 						printlog("unknown error:\n"+error)
