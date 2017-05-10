@@ -157,7 +157,7 @@ class ThanatosTask:
 					count += 1
 			return count
 	def parse_mas_config(self, value):
-		return value.replace("t", "").replace("T", "").replace("M", "").replace("m", "").replace("K", "").replace("k", "").replace("B", "").replace("b", "")
+		return int(value.replace("t", "").replace("T", "").replace("M", "").replace("m", "").replace("K", "").replace("k", "").replace("B", "").replace("b", ""))
 
 	def removefromlist(self, oldthread, dpage):
 		confirmed = False
