@@ -147,7 +147,6 @@ class ThanatosTask:
 		text = text.split("\n")
 
 		for l in range(0, len(text)):
-			print(l)
 			thread_header = re.search('^== *([^=].*?) *== *$', text[l])
 			if thread_header:
 				if cut == True:
