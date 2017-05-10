@@ -71,8 +71,7 @@ class ThanatosTask:
 	etag = "</div>"
 
 	comments = {
-		"fi00": "lisäsi linkin arkistoon",
-		"fi00m": "lisäsi linkkejä arkistoihin",
+		"fi00": ": päivitetty arkistolinkit",
 	}
 
 	db = TinyDB("core/db/taskdb/archiver_linker.json")
@@ -178,10 +177,8 @@ class ThanatosTask:
 				linktable = lg.generate(config, links)
 				self.update_text(page, linktable)
 				newmatch = self.db.search(query.name == page.title())
-				if newmatch[0]["counter"] - match[0]["counter"] > 1:
-					comment = create_comment.comment([self.comments[config.lang+"00m"]])
-				else:
-					comment = create_comment.comment([self.comments[config.lang+"00"]])
+
+				comment = create_comment.comment([self.comments[config.lang]])
 				if oldtext != page.text:
 					printlog("archive linker: updating links for", page)
 					wikipedia_worker.savepage(page, page.text, comment)
