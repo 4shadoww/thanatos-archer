@@ -140,22 +140,23 @@ class ThanatosTask:
 			elif len(dpage.text)-1 == l:
 				dpage.threads.append(Thread(dpage.text[start:l+1], ts))
 
-	def threads_count(self, page):
-			site = pywikibot.Site()
-			start = 0
-			cut = False
-			count = 0
-			ts = textlib.TimeStripper(site=site)
-			for l in  range(0, len(page.text)):
-				thread_header = re.search('^== *([^=].*?) *== *$', page.text[l])
-				if thread_header:
-					if cut == True:
-						count += 1
-					start = l
-					cut = True
-				elif len(page.text)-1 == l:
+	def threads_count(self, text):
+		start = 0
+		cut = False
+		count = 0
+		text = text.split("\n")
+
+		for l in range(0, len(text)):
+			print(l)
+			thread_header = re.search('^== *([^=].*?) *== *$', text[l])
+			if thread_header:
+				if cut == True:
 					count += 1
-			return count
+				start = l
+				cut = True
+			elif len(text)-1 == l:
+				count += 1
+		return count
 	def parse_mas_config(self, value):
 		return int(value.replace("t", "").replace("T", "").replace("M", "").replace("m", "").replace("K", "").replace("k", "").replace("B", "").replace("b", ""))
 
@@ -296,7 +297,7 @@ class ThanatosTask:
 			page.text += dpage.config.archiveheader
 
 		for i in range(0, len(dpage.toarchive)):
-			if dpage.config.using_year or not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page) < self.parse_mas_config(dpage.config.maxarchivesize):
+			if dpage.config.using_year or not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(dpage.config.maxarchivesize):
 				if '\n'.join(dpage.toarchive[0].content) in page.text:
 					dpage.toarchive.pop(0)
 				else:
@@ -331,7 +332,7 @@ class ThanatosTask:
 			printlog("archiver: counter method wikipage")
 			counter = dpage.config.counter
 
-		while len(dpage.toarchive) != 0:
+		while len(dpage.toarchive) > 0:
 			data = self.addthread2archive(dpage, counter)
 			if data[1] > 1:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(data[1])+" "+self.comments[config.lang+"02m"]+" [["+dpage.name+"]]"])
