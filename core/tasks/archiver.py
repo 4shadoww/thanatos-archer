@@ -295,8 +295,10 @@ class ThanatosTask:
 		if page.exists() == False or page.text == "":
 			page.text += dpage.config.archiveheader
 
+		archived = False
 		for i in range(0, len(dpage.toarchive)):
 			if dpage.config.using_year or not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(dpage.config.maxarchivesize):
+				archived = True
 				if '\n'.join(dpage.toarchive[0].content) in page.text:
 					dpage.toarchive.pop(0)
 				else:
@@ -306,7 +308,7 @@ class ThanatosTask:
 					dpage.toarchive.pop(0)
 				x += 1
 
-			else:
+			elif archived:
 				counter += 1
 				return page, x, counter
 		return page, x, counter
