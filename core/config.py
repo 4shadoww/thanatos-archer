@@ -4,6 +4,13 @@ lang = "fi"
 # Sleep time
 sleep_time = 60
 
+# Api limits
+api_delay = 0
+
+api_writedelay = 0
+
+api_absolute = True
+
 # Enable log
 enable_log = False
 

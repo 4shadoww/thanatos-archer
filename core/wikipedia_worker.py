@@ -5,7 +5,7 @@ import core.config
 def loadpage(page):
 	try:
 		site = pywikibot.Site()
-		site.throttle.setDelays(delay=0, writedelay=5, absolute=False)
+		site.throttle.setDelays(core.config.api_delay=0, core.config.api_writedelay=5, core.config.api_absolute=False)
 		wpage = pywikibot.Page(site, page)
 
 	except pywikibot.exceptions.InvalidTitle:
