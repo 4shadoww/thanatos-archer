@@ -308,10 +308,10 @@ class ThanatosTask:
 					dpage.toarchive.pop(0)
 				x += 1
 
-			elif archived:
+			else:
 				counter += 1
-				return page, x, counter
-		return page, x, counter
+				return page, x, counter, archived
+		return page, x, counter, archived
 
 
 	def save2archive(self, dpage):
@@ -339,7 +339,7 @@ class ThanatosTask:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(data[1])+" "+self.comments[config.lang+"02m"]+" [["+dpage.name+"]]"])
 			else:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"02"]+" [["+dpage.name+"]]"])
-			if data[0].text != '\n'.join(dpage.text):
+			if data[0].text != '\n'.join(dpage.text) and data[3]:
 				archives.append(data[0].title())
 				printlog("archiver: saving archive "+dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
 				wikipedia_worker.savepage(data[0], data[0].text, comment)
