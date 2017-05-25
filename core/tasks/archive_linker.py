@@ -71,7 +71,7 @@ class ThanatosTask:
 	etag = "</div>"
 
 	comments = {
-		"fi00": ": päivitetty arkistolinkit",
+		"fi": ": päivitetty arkistolinkit",
 	}
 
 	db = TinyDB("core/db/taskdb/archiver_linker.json")
