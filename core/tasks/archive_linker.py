@@ -4,6 +4,7 @@ import traceback
 from tinydb import TinyDB, Query
 import pywikibot
 import re
+from core import path
 
 class Config:
 	archive = "Arkisto %(counter)d"
@@ -74,7 +75,7 @@ class ThanatosTask:
 		"fi": ": päivitetty arkistolinkit",
 	}
 
-	db = TinyDB("core/db/taskdb/archiver_linker.json")
+	db = TinyDB(path.main()+"core/db/taskdb/archiver_linker.json")
 
 	def load_config(self, page, site):
 		confg = Config()

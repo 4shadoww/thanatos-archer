@@ -6,6 +6,7 @@ import pywikibot
 from tinydb import TinyDB, Query
 import traceback
 import datetime
+from core import path
 
 class UnsupportedConfig(Exception):
 	pass
@@ -103,7 +104,7 @@ class ThanatosTask:
 	time = ["00/05/*/*", "00/12/*/*", "00/18/*/*", "00/00/*/*"]
 
 	# Database
-	db = TinyDB("core/db/taskdb/archiver.json")
+	db = TinyDB(path.main()+"core/db/taskdb/archiver.json")
 
 	# Archiver config
 	template_names = ["Käyttäjä:HarrivBOT/config", "Käyttäjä:4shadowwBOT/config"]
