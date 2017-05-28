@@ -5,8 +5,11 @@ import sys
 import os
 import traceback
 
+# Import path tool
+from core import path
+
 # Append lib path
-sys.path.append("core/lib")
+sys.path.append(path.main()+"core/lib")
 
 # Import core modules
 from core.task_handler import TaskHandler

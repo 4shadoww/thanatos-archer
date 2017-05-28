@@ -1,12 +1,13 @@
 import datetime
 from core import config
 from core import colors
+from core import path
 import sys
 
 time = datetime.datetime.now()
 logfilename = str(time)
 if config.enable_log == True:
-	logfile = open('core/log/'+logfilename+'.log', 'a')
+	logfile = open(path.main()+"core/log/"+logfilename+".log", "a")
 
 def printlog(*message, end='\n'):
 	finalmessage = ""
@@ -63,7 +64,7 @@ def debug(*message, end='\n'):
 	log(finalmessage)
 
 def crashreport(*message):
-	crashfile = open('core/log/crashreport.log', 'a')
+	crashfile = open(path.main()+"core/log/crashreport.log", "a")
 	finalmessage = ""
 	for l, mes in enumerate(message):
 		finalmessage += str(mes)
