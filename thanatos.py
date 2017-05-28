@@ -11,6 +11,9 @@ from core import path
 # Append lib path
 sys.path.append(path.main()+"core/lib")
 
+# Set pywikibot config path
+os.environ["PYWIKIBOT2_DIR"] = path.main()
+
 # Import core modules
 from core.task_handler import TaskHandler
 from core import log
