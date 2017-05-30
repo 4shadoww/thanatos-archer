@@ -8,9 +8,6 @@ import traceback
 # Import path tool
 from core import path
 
-# Set time zone
-os.system("export TZ=\"/usr/share/zoneinfo/Europe/Helsinki\"")
-
 # Append lib path
 sys.path.append(path.main()+"core/lib")
 
