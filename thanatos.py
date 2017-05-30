@@ -13,6 +13,8 @@ sys.path.append(path.main()+"core/lib")
 
 # Set pywikibot config path
 os.environ["PYWIKIBOT2_DIR"] = path.main()
+# Set utf-8 encoding
+is.environ["PYTHONIOENCODING"] = "UTF-8"
 
 # Import core modules
 from core.task_handler import TaskHandler
