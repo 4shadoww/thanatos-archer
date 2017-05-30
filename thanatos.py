@@ -10,8 +10,6 @@ from core import path
 
 # Set time zone
 os.system("export TZ=\"/usr/share/zoneinfo/Europe/Helsinki\"")
-# Set utf-8
-os.system("export LANG=en_US.UTF-8")
 
 # Append lib path
 sys.path.append(path.main()+"core/lib")
