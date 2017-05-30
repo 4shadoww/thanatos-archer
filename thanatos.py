@@ -20,8 +20,6 @@ os.environ["PYTHONIOENCODING"] = "UTF-8"
 from core.task_handler import TaskHandler
 from core import log
 
-print("äöäö")
-
 def main():
 	try:
 		task_handler = TaskHandler()
