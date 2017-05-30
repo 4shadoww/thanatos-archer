@@ -190,7 +190,7 @@ class ThanatosTask:
 		#pages = [pywikibot.Page(site, "Keskustelu käyttäjästä:4shadoww")]
 		for page in pages:
 			if page.botMayEdit() and page.canBeEdited():
-				printlog("archive linker: checking", page)
+				printlog("archive linker: checking", page.title())
 				try:
 					config = self.load_config(page, site)
 					self.link(page, site, config)

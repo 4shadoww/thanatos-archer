@@ -23,6 +23,8 @@ os.environ["PYWIKIBOT2_DIR"] = path.main()
 from core.task_handler import TaskHandler
 from core import log
 
+print("äöäö")
+
 def main():
 	try:
 		task_handler = TaskHandler()
