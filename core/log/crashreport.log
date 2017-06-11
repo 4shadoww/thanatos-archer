@@ -1,0 +1,77 @@
+2017-06-11 19:18:02.692762 Traceback (most recent call last):
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 407, in run
+    if self.shouldArchive():
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 376, in shouldArchive
+    self.removeoldt()
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 266, in removeoldt
+    self.removefromlist(thread.content)
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 258, in removefromlist
+    dpage.text.pop(startpos)
+NameError: name 'dpage' is not defined
+ 
+2017-06-11 19:18:04.311453 Traceback (most recent call last):
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 407, in run
+    if self.shouldArchive():
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 376, in shouldArchive
+    self.removeoldt()
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 266, in removeoldt
+    self.removefromlist(thread.content)
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 258, in removefromlist
+    dpage.text.pop(startpos)
+NameError: name 'dpage' is not defined
+ 
+2017-06-11 19:32:56.391489 Traceback (most recent call last):
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 407, in run
+    self.archive()
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 347, in archive
+    archives = self.save2archive()
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 328, in save2archive
+    wikipedia_worker.savepage(data[0], data[0].text, comment)
+  File "/home/shadoww/Projects/thanatos-archer/core/wikipedia_worker.py", line 22, in savepage
+    wpage.save(comment)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/tools/__init__.py", line 1105, in wrapper
+    return obj(*__args, **__kw)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1074, in save
+    cc=apply_cosmetic_changes, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1098, in _save
+    raise err
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1085, in _save
+    watch=watch, bot=botflag, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/site.py", line 1087, in callee
+    return fn(self, *args, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/site.py", line 4305, in editpage
+    raise SpamfilterError(page, result['edit']['spamblacklist'])
+pywikibot.exceptions.SpamfilterError: Edit to page [[Keskustelu wikiprojektista:Urheilu/Arkisto 2]] rejected by spam filter due to content:
+surf.to
+ 
+2017-06-11 19:52:25.139595 Traceback (most recent call last):
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 411, in run
+    except KeyboardInterrupt:
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 351, in archive
+    comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(ac)+" "+self.comments[config.lang+"01m"]+" "+archives])
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 330, in save2archive
+    elif data[2] > counter:
+  File "/home/shadoww/Projects/thanatos-archer/core/wikipedia_worker.py", line 22, in savepage
+    wpage.save(comment)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/tools/__init__.py", line 1105, in wrapper
+    return obj(*__args, **__kw)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1074, in save
+    cc=apply_cosmetic_changes, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1098, in _save
+    raise err
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/page.py", line 1085, in _save
+    watch=watch, bot=botflag, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/site.py", line 1087, in callee
+    return fn(self, *args, **kwargs)
+  File "/home/shadoww/Projects/thanatos-archer/core/lib/pywikibot/site.py", line 4305, in editpage
+    raise SpamfilterError(page, result['edit']['spamblacklist'])
+pywikibot.exceptions.SpamfilterError: Edit to page [[Keskustelu wikiprojektista:Urheilu/Arkisto 3]] rejected by spam filter due to content:
+surf.to
+ 
+2017-06-11 20:20:46.670714 Traceback (most recent call last):
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 409, in run
+    self.archive()
+  File "/home/shadoww/Projects/thanatos-archer/core/tasks/archiver.py", line 362, in archive
+    self.dpage.text = '\n'.join(self.dpage.text).replace(match, newtemplate).split("\n")
+TypeError: replace() argument 2 must be str, not None
+ 
