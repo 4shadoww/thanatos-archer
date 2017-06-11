@@ -91,6 +91,14 @@ def template_title_regex(tpl_page):
 
 	return re.compile(r'(?:(?:%s):)%s%s' % (u'|'.join(ns), marker, title))
 
+def glue_template_and_params(template_and_params):
+	(template, params) = template_and_params
+	text = ""
+	for item in params:
+		text += u"|%s=%s\n" % (item, params[item])
+
+	return u"{{%s\n%s}}" % (template, text)
+
 class ThanatosTask:
 	comments = {
 	"fi00": "arkistoi",
@@ -205,16 +213,11 @@ class ThanatosTask:
 		return int(string)*factor
 
 	def updatecounter(self, template, counter):
-		template = template.split("\n")
-		for i in range(0, len(template)):
-			arr = re.search('^[|].*', template[i])
-			if arr:
-				arr2 = arr.group(0)[1:].split("=")
-				if arr2[0][:7] == "counter":
-					arr2[1] = " "+str(counter)
-					arr2 = "|"+'='.join(arr2)
-					template[i] = arr2
-					return '\n'.join(template)
+		template_and_params = textlib.extract_templates_and_params(template)
+		for temp in template_and_params:
+			if temp[0] == self.template_name and "counter" in temp[1]:
+				temp[1]["counter"] = str(counter)
+				return glue_template_and_params(temp)
 
 	def getpages(self):
 		transclusion_page = pywikibot.Page(self.site, self.template_name, ns=10)
@@ -391,9 +394,9 @@ class ThanatosTask:
 	def run(self):
 		for template in self.template_names:
 			self.template_name = template
-			pages = self.getpages()
-			#pages = [pywikibot.Page(self.site, "User_talk:4shadoww/test2")]
-			#self.template_page = pywikibot.Page(self.site, self.template_name)
+			#pages = self.getpages()
+			pages = [pywikibot.Page(self.site, "Keskustelu wikiprojektista:Urheilu")]
+			self.template_page = pywikibot.Page(self.site, self.template_name)
 			for page in pages:
 				if page.title() in self.ignore:
 					print("ignored", page.title())
