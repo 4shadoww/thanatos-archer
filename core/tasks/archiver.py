@@ -95,7 +95,7 @@ def glue_template_and_params(template_and_params):
 	(template, params) = template_and_params
 	text = ""
 	for item in params:
-		text += u"|%s=%s\n" % (item, params[item])
+		text += u"| %s = %s\n" % (item, params[item])
 
 	return u"{{%s\n%s}}" % (template, text)
 
@@ -394,9 +394,9 @@ class ThanatosTask:
 	def run(self):
 		for template in self.template_names:
 			self.template_name = template
-			#pages = self.getpages()
-			pages = [pywikibot.Page(self.site, "Keskustelu wikiprojektista:Urheilu")]
-			self.template_page = pywikibot.Page(self.site, self.template_name)
+			pages = self.getpages()
+			#pages = [pywikibot.Page(self.site, "Keskustelu wikiprojektista:Urheilu")]
+			#self.template_page = pywikibot.Page(self.site, self.template_name)
 			for page in pages:
 				if page.title() in self.ignore:
 					print("ignored", page.title())
