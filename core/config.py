@@ -7,7 +7,7 @@ sleep_time = 60
 # Api limits
 api_delay = 0
 
-api_writedelay = 0
+api_writedelay = 5
 
 api_absolute = True
 

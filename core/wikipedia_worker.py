@@ -14,11 +14,11 @@ def loadpage(page):
 	return site, wpage
 
 def savepage(wpage, text, comment):
+	print("save page")
 	if core.config.test == False:
 		try:
 			wpage.text = text
 			wpage.save(comment)
-
 		except pywikibot.exceptions.EditConflict:
 			printlog("edit conflict not saved", wpage)
 		except pywikibot.exceptions.OtherPageSaveError:

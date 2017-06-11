@@ -11,48 +11,27 @@ from core import path
 class UnsupportedConfig(Exception):
 	pass
 
-def template_title_regex(tpl_page):
-	"""
-	Return a regex that matches to variations of the template title.
-
-	It supports the transcluding variant as well as localized namespaces and
-	case-insensitivity depending on the namespace.
-
-	@param tpl_page: The template page
-	@type tpl_page: Page
-	"""
-	ns = tpl_page.site.namespaces[tpl_page.namespace()]
-	marker = '?' if ns.id == 10 else ''
-	title = tpl_page.title(withNamespace=False)
-	if ns.case != 'case-sensitive':
-		title = '[%s%s]%s' % (re.escape(title[0].upper()),
-							  re.escape(title[0].lower()),
-							  re.escape(title[1:]))
-	else:
-		title = re.escape(title)
-
-	return re.compile(r'(?:(?:%s):)%s%s' % (u'|'.join(ns), marker, title))
-
-
 class DiscussionPage:
-	config = None
-	text = None
-	threads = None
-	oldthreads = None
-	toarchive = None
-	name = None
-	counter = None
+	def __init__(self):
+		self.config = None
+		self.text = None
+		self.threads = None
+		self.oldthreads = []
+		self.toarchive = []
+		self.page = None
+		self.counter = None
 
 class Config:
-	archive = "Arkisto %(counter)d"
-	using_year = False
-	algo = "30d"
-	counter = None
-	maxarchivesize = "100kt"
-	threads = None
-	minthreadsleft = 5
-	minthreadstoarchive = 2
-	archiveheader = "{{Arkisto}}"
+	def __init__(self):
+		self.archive = "Arkisto %(counter)d"
+		self.using_year = False
+		self.algo = "30d"
+		self.counter = None
+		self.maxarchivesize = "100kt"
+		self.threads = None
+		self.minthreadsleft = 5
+		self.minthreadstoarchive = 2
+		self.archiveheader = "{{Arkisto}}"
 
 
 class Thread:
@@ -90,6 +69,28 @@ class TZoneUTC(datetime.tzinfo):
 	def __repr__(self):
 		return "%s()" % self.__class__.__name__
 
+def template_title_regex(tpl_page):
+	"""
+	Return a regex that matches to variations of the template title.
+
+	It supports the transcluding variant as well as localized namespaces and
+	case-insensitivity depending on the namespace.
+
+	@param tpl_page: The template page
+	@type tpl_page: Page
+	"""
+	ns = tpl_page.site.namespaces[tpl_page.namespace()]
+	marker = '?' if ns.id == 10 else ''
+	title = tpl_page.title(withNamespace=False)
+	if ns.case != 'case-sensitive':
+		title = '[%s%s]%s' % (re.escape(title[0].upper()),
+							  re.escape(title[0].lower()),
+							  re.escape(title[1:]))
+	else:
+		title = re.escape(title)
+
+	return re.compile(r'(?:(?:%s):)%s%s' % (u'|'.join(ns), marker, title))
+
 class ThanatosTask:
 	comments = {
 	"fi00": "arkistoi",
@@ -117,90 +118,15 @@ class ThanatosTask:
 
 	ignore = []
 
-	def str2time(self, string):
-		if string.endswith('d'):
-			return datetime.timedelta(days=int(string[:-1]))
-		elif string.endswith('h'):
-			return datetime.timedelta(hours=int(string[:-1]))
-		else:
-			return datetime.timedelta(seconds=int(string))
+	site = pywikibot.Site()
 
-	def get_threads(self, dpage):
-		site = pywikibot.Site()
-		dpage.threads = []
-		start = 0
-		cut = False
-		ts = textlib.TimeStripper(site=site)
-		for l in  range(0, len(dpage.text)):
-			thread_header = re.search('^== *([^=].*?) *== *$', dpage.text[l])
-			if thread_header:
-				if cut == True:
-					dpage.threads.append(Thread(dpage.text[start:l], ts))
-				start = l
-				cut = True
-			elif len(dpage.text)-1 == l:
-				dpage.threads.append(Thread(dpage.text[start:l+1], ts))
-
-	def threads_count(self, text):
-		start = 0
-		cut = False
-		count = 0
-		text = text.split("\n")
-
-		for l in range(0, len(text)):
-			thread_header = re.search('^== *([^=].*?) *== *$', text[l])
-			if thread_header:
-				if cut == True:
-					count += 1
-				start = l
-				cut = True
-			elif len(text)-1 == l:
-				count += 1
-		return count
 	def parse_mas_config(self, value):
 		return int(value.replace("t", "").replace("T", "").replace("M", "").replace("m", "").replace("K", "").replace("k", "").replace("B", "").replace("b", ""))
 
-	def removefromlist(self, oldthread, dpage):
-		confirmed = False
-		i = 0
-		startpos = None
-
-		for l in range(0, len(dpage.text)):
-			if i == len(oldthread):
-				confirmed = True
-				break
-
-			if oldthread[i] == dpage.text[l]:
-				if startpos == None:
-					startpos = l
-				i += 1
-			else:
-				startpos = None
-				i = 0
-
-		for l in range(0, len(oldthread)):
-			dpage.text.pop(startpos)
-
-	def removeoldt(self, dpage):
-		dpage.toarchive = []
-		count = len(dpage.threads)
-		if len(dpage.oldthreads) >= dpage.config.minthreadstoarchive:
-			for thread in dpage.oldthreads:
-				if count > dpage.config.minthreadsleft:
-					dpage.toarchive.append(thread)
-					self.removefromlist(thread.content, dpage)
-					count -= 1
-
-	def getpages(self, template):
-		site = pywikibot.Site()
-		transclusion_page = pywikibot.Page(site, template, ns=10)
-		self.template_page = transclusion_page
-		return transclusion_page.getReferences(onlyTemplateInclusion=True, follow_redirects=False, namespaces=[])
-
-	def load_config(self, page, site):
+	def load_config(self):
 		config = Config()
-		for tpl in page.templatesWithParams():
-			if tpl[0] == pywikibot.Page(site, self.template_name, ns=10):
+		for tpl in self.dpage.page.templatesWithParams():
+			if tpl[0] == pywikibot.Page(self.site, self.template_name, ns=10):
 				for param in tpl[1]:
 					item, value = param.split('=', 1)
 					if item == "archive":
@@ -215,7 +141,7 @@ class ThanatosTask:
 						elif "%(monthnameshort)s" in value:
 							raise UnsupportedConfig("invalid archive param")
 
-						config.archive = value.replace(page.title()+"/", "").replace("{{FULLPAGENAMEE}}/", "")
+						config.archive = value.replace(self.dpage.page.title()+"/", "").replace("{{FULLPAGENAMEE}}/", "")
 					elif item ==  "algo":
 						if "old(" in value:
 							algo = re.findall(r"old\((.*?)\)", value)[0]
@@ -259,6 +185,14 @@ class ThanatosTask:
 				break
 		return config
 
+	def str2time(self, string):
+		if string.endswith('d'):
+			return datetime.timedelta(days=int(string[:-1]))
+		elif string.endswith('h'):
+			return datetime.timedelta(hours=int(string[:-1]))
+		else:
+			return datetime.timedelta(seconds=int(string))
+
 	def str2bytes(self, string):
 		factor = 0
 		if "k" in string or "K" in string:
@@ -282,31 +216,79 @@ class ThanatosTask:
 					template[i] = arr2
 					return '\n'.join(template)
 
+	def getpages(self):
+		transclusion_page = pywikibot.Page(self.site, self.template_name, ns=10)
+		self.template_page = transclusion_page
+		return transclusion_page.getReferences(onlyTemplateInclusion=True, follow_redirects=False, namespaces=[])
 
-	def addthread2archive(self, dpage, counter):
+	def get_threads(self):
+		self.dpage.threads = []
+		start = 0
+		cut = False
+		ts = textlib.TimeStripper(site=self.site)
+		for l in  range(0, len(self.dpage.text)):
+			thread_header = re.search('^== *([^=].*?) *== *$', self.dpage.text[l])
+			if thread_header:
+				if cut == True:
+					self.dpage.threads.append(Thread(self.dpage.text[start:l], ts))
+				start = l
+				cut = True
+			elif len(self.dpage.text)-1 == l:
+				self.dpage.threads.append(Thread(self.dpage.text[start:l+1], ts))
+
+	def removefromlist(self, oldthread):
+		confirmed = False
+		i = 0
+		startpos = None
+
+		for l in range(0, len(self.dpage.text)):
+			if i == len(oldthread):
+				confirmed = True
+				break
+
+			if oldthread[i] == self.dpage.text[l]:
+				if startpos == None:
+					startpos = l
+				i += 1
+			else:
+				startpos = None
+				i = 0
+
+		for l in range(0, len(oldthread)):
+			self.dpage.text.pop(startpos)
+
+	def removeoldt(self):
+		count = len(self.dpage.threads)
+		if len(self.dpage.oldthreads) >= self.dpage.config.minthreadstoarchive:
+			for thread in self.dpage.oldthreads:
+				if count > self.dpage.config.minthreadsleft:
+					self.dpage.toarchive.append(thread)
+					self.removefromlist(thread.content)
+					count -= 1
+
+	def addthread2archive(self, counter):
 		x = 0
-		site = pywikibot.Site()
-		if "%(counter)d" in dpage.config.archive:
-			page = pywikibot.Page(site, dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
+		if "%(counter)d" in self.dpage.config.archive:
+			page = pywikibot.Page(self.site, self.dpage.page.title()+"/"+self.dpage.config.archive.replace("%(counter)d", str(counter)))
 			using_counter = True
 		else:
-			page = pywikibot.Page(site, dpage.name+"/"+dpage.config.archive)
+			page = pywikibot.Page(self.site, self.dpage.page.title()+"/"+self.dpage.config.archive)
 			using_counter = False
 
-		if page.exists() == False or page.text == "":
-			page.text += dpage.config.archiveheader
+		if not page.exists() or page.text == "":
+			page.text += self.dpage.config.archiveheader
 
 		archived = False
-		for i in range(0, len(dpage.toarchive)):
-			if dpage.config.using_year or not dpage.config.threads and len(page.text) < self.str2bytes(dpage.config.maxarchivesize) or dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(dpage.config.maxarchivesize):
+		for i in range(0, len(self.dpage.toarchive)):
+			if self.dpage.config.using_year or not self.dpage.config.threads and len(page.text) < self.str2bytes(self.dpage.config.maxarchivesize) or self.dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(self.dpage.config.maxarchivesize):
 				archived = True
-				if '\n'.join(dpage.toarchive[0].content) in page.text:
-					dpage.toarchive.pop(0)
+				if '\n'.join(self.dpage.toarchive[0].content) in page.text:
+					self.dpage.toarchive.pop(0)
 				else:
 					if i == 0:
 						page.text += "\n\n"
-					page.text += '\n'.join(dpage.toarchive[0].content)+"\n"
-					dpage.toarchive.pop(0)
+					page.text += '\n'.join(self.dpage.toarchive[0].content)+"\n"
+					self.dpage.toarchive.pop(0)
 				x += 1
 
 			else:
@@ -315,41 +297,43 @@ class ThanatosTask:
 		return page, x, counter, archived
 
 
-	def save2archive(self, dpage):
+	def save2archive(self):
 		archives = []
 		usingdb = False
 
-		if dpage.config.counter == None:
+		if self.dpage.config.counter == None:
 			printlog("archiver: counter method db")
 			usingdb = True
 			exet = Query()
-			matches = self.db.search(exet.name == dpage.name)
+			matches = self.db.search(exet.name == self.dpage.page.title())
 
 			if matches == []:
-				self.db.insert({"name": dpage.name, "counter": 1})
+				self.db.insert({"name": self.dpage.page.title(), "counter": 1})
 				counter = 1
 			else:
 				counter = matches[0]["counter"]
 		else:
 			printlog("archiver: counter method wikipage")
-			counter = dpage.config.counter
+			counter = self.dpage.config.counter
 
-		while len(dpage.toarchive) > 0:
-			data = self.addthread2archive(dpage, counter)
+		while len(self.dpage.toarchive) > 0:
+			data = self.addthread2archive(counter)
 			if data[1] > 1:
-				comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(data[1])+" "+self.comments[config.lang+"02m"]+" [["+dpage.name+"]]"])
+				comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(data[1])+" "+self.comments[config.lang+"02m"]+" [["+self.dpage.page.title()+"]]"])
 			else:
-				comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"02"]+" [["+dpage.name+"]]"])
-			if data[0].text != '\n'.join(dpage.text) and data[3]:
+				comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"02"]+" [["+self.dpage.page.title()+"]]"])
+			if data[0].text != '\n'.join(self.dpage.text) and data[3]:
 				archives.append(data[0].title())
-				printlog("archiver: saving archive "+dpage.name+"/"+dpage.config.archive.replace("%(counter)d", str(counter)))
+				printlog("archiver: saving archive "+self.dpage.page.title()+"/"+self.dpage.config.archive.replace("%(counter)d", str(counter)))
 				wikipedia_worker.savepage(data[0], data[0].text, comment)
+				counter = data[2]
+			elif data[2] > counter:
 				counter = data[2]
 
 		if usingdb:
-			self.db.update({"counter": counter}, exet.name == dpage.name)
+			self.db.update({"counter": counter}, exet.name == self.dpage.page.title())
 		else:
-			dpage.counter = counter
+			self.dpage.counter = counter
 
 		strarchives = ""
 		for i in range(0, len(archives)):
@@ -360,56 +344,56 @@ class ThanatosTask:
 
 		return strarchives
 
-	def archive(self, dpage, page):
-		ac = len(dpage.toarchive)
-		archives = self.save2archive(dpage)
+	def archive(self):
+		ac = len(self.dpage.toarchive)
+		archives = self.save2archive()
 		if ac > 1:
 			comment = create_comment.comment([self.comments[config.lang+"00"]+" "+str(ac)+" "+self.comments[config.lang+"01m"]+" "+archives])
 		else:
 			comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"01"]+" "+archives])
 
 		# Update counter
-		if dpage.counter != None and dpage.counter != dpage.config.counter:
+		if self.dpage.counter != None and self.dpage.counter != self.dpage.config.counter:
 			printlog("archiver: have to update counter")
 			rx = re.compile(r'\{\{%s\s*?\n.*?\n\}\}'
 							% (template_title_regex(self.template_page).pattern), re.DOTALL)
-			match = rx.search(page.text).group(0)
-			newtemplate = self.updatecounter(match, dpage.counter)
-			dpage.text = '\n'.join(dpage.text).replace(match, newtemplate).split("\n")
+			match = rx.search(self.dpage.page.text).group(0)
+			newtemplate = self.updatecounter(match, self.dpage.counter)
+			self.dpage.text = '\n'.join(self.dpage.text).replace(match, newtemplate).split("\n")
 		printlog("archiver: saving page")
-		wikipedia_worker.savepage(page, '\n'.join(dpage.text), comment)
+		wikipedia_worker.savepage(self.dpage.page, '\n'.join(self.dpage.text), comment)
 
-	def analyze(self, page, dpage):
-		dpage.text = page.text.split("\n")
-		oldtext = list(dpage.text)
-		dpage.oldthreads = []
-		self.get_threads(dpage)
+
+	def shouldArchive(self):
+		self.dpage.text = self.dpage.page.text.split("\n")
+		oldtext = list(self.dpage.text)
+		self.get_threads()
 		now = datetime.datetime.utcnow().replace(tzinfo=TZoneUTC())
-		for thread in dpage.threads:
+		for thread in self.dpage.threads:
 			if thread.timestamp:
-				if now - thread.timestamp > self.str2time(dpage.config.algo):
-					dpage.oldthreads.append(thread)
+				if now - thread.timestamp > self.str2time(self.dpage.config.algo):
+					self.dpage.oldthreads.append(thread)
 
-		dpage.oldthreads.sort(key=lambda t: t.timestamp)
-		self.removeoldt(dpage)
+		self.dpage.oldthreads.sort(key=lambda t: t.timestamp)
+		self.removeoldt()
 
-		if  len(dpage.toarchive) < dpage.config.minthreadstoarchive:
+		if  len(self.dpage.toarchive) < self.dpage.config.minthreadstoarchive:
 			printlog("archiver: not enough old threads")
-			return
+			return False
 
-		for t in dpage.toarchive:
+		for t in self.dpage.toarchive:
 			printlog("archiver: going to archive",t.content[0])
 
-		if oldtext != dpage.text:
-			self.archive(dpage, page)
+		if oldtext != self.dpage.text:
+			return True
+
 
 	def run(self):
 		for template in self.template_names:
 			self.template_name = template
-			pages = self.getpages(template)
-			site = pywikibot.Site()
-			#pages = [pywikibot.Page(site, "User_talk:4shadoww/test2")]
-			#self.template_page = pywikibot.Page(site, self.template_name)
+			pages = self.getpages()
+			#pages = [pywikibot.Page(self.site, "User_talk:4shadoww/test2")]
+			#self.template_page = pywikibot.Page(self.site, self.template_name)
 			for page in pages:
 				if page.title() in self.ignore:
 					print("ignored", page.title())
@@ -417,11 +401,13 @@ class ThanatosTask:
 				elif page.botMayEdit() and page.canBeEdited():
 					printlog("archiver: checking", page)
 					try:
-						dpage = DiscussionPage()
-						dpage.name = page.title()
-						dpage.config = self.load_config(page, site)
-						dpage.counter = dpage.config.counter
-						self.analyze(page, dpage)
+						self.dpage = DiscussionPage()
+						self.dpage.page = page
+						self.dpage.config = self.load_config()
+						self.dpage.counter = self.dpage.config.counter
+						if self.shouldArchive():
+							self.archive()
+
 					except KeyboardInterrupt:
 						return
 					except UnsupportedConfig:
