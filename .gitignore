@@ -1,11 +1,10 @@
 user-config.py
 __pycache__/
 apicache/
-core/log/*.log
 throttle.ctrl
 pywikibot.lwp
 core/articles/*
 core/db/*.json
 core/db/taskdb/*.json
-logs/
+logs/*.log
 test.py
