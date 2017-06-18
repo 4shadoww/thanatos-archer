@@ -12,7 +12,7 @@ api_writedelay = 0
 api_absolute = True
 
 # Enable log
-enable_log = False
+enable_log = True
 
 # Enable debug
 debug = True
