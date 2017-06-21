@@ -10,4 +10,4 @@ export PYTHONIOENCODING="UTF-8"
 
 # Start thanatos
 THANATOS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/thanatos.py"
-$HOME/thn/bin/python3 $THANATOS
+$THANATOS
