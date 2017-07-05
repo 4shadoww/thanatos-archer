@@ -282,17 +282,17 @@ class ThanatosTask:
 			page.text += self.dpage.config.archiveheader
 
 		archived = False
-		for i in range(0, len(self.dpage.toarchive)):
+		for i in range(len(self.dpage.toarchive)):
 			if self.dpage.config.using_year or not self.dpage.config.threads and len(page.text) < self.str2bytes(self.dpage.config.maxarchivesize) or self.dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(self.dpage.config.maxarchivesize):
-				archived = True
 				if '\n'.join(self.dpage.toarchive[0].content) in page.text:
 					self.dpage.toarchive.pop(0)
 				else:
+					archived = True
 					if i == 0:
 						page.text += "\n\n"
 					page.text += '\n'.join(self.dpage.toarchive[0].content)+"\n"
 					self.dpage.toarchive.pop(0)
-				x += 1
+					x += 1
 
 			else:
 				counter += 1
@@ -339,7 +339,7 @@ class ThanatosTask:
 			self.dpage.counter = counter
 
 		strarchives = ""
-		for i in range(0, len(archives)):
+		for i in range(len(archives)):
 			strarchives += "[["+archives[i]+"]]"
 
 			if i != len(archives)-1:
