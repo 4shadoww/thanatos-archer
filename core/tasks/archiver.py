@@ -212,7 +212,6 @@ class ThanatosTask:
 		string = string.replace("M", "").replace("m", "")
 		string = string.replace("K", "").replace("k", "")
 		string = string.replace("B", "").replace("b", "")
-		string = string.replace("T", "").replace("t", "")
 		return int(string)*factor
 
 	def updatecounter(self, template, counter):
