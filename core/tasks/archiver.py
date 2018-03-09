@@ -37,6 +37,7 @@ class Config:
 class Thread:
 	content = None
 	timestamp = None
+	mintimestamp = None
 	site = None
 
 	def __init__(self, content, ts):
@@ -49,8 +50,10 @@ class Thread:
 			if linedate:
 				if not self.timestamp:
 					self.timestamp = linedate
+					self.mintimestamp = linedate
 				else:
 					self.timestamp = max(self.timestamp, linedate)
+					self.mintimestamp = min(self.mintimestamp, linedate)
 
 
 class TZoneUTC(datetime.tzinfo):
@@ -140,7 +143,6 @@ class ThanatosTask:
 					if item == "archive":
 						now = datetime.datetime.now()
 						if "%(year)d" in value:
-							value = value.replace("%(year)d", str(now.year))
 							config.using_year = True
 						elif "%(month)d" in value:
 							raise UnsupportedConfig("invalid archive param")
@@ -210,6 +212,7 @@ class ThanatosTask:
 		string = string.replace("M", "").replace("m", "")
 		string = string.replace("K", "").replace("k", "")
 		string = string.replace("B", "").replace("b", "")
+		string = string.replace("T", "").replace("t", "")
 		return int(string)*factor
 
 	def updatecounter(self, template, counter):
@@ -273,17 +276,31 @@ class ThanatosTask:
 		x = 0
 		if "%(counter)d" in self.dpage.config.archive:
 			page = pywikibot.Page(self.site, self.dpage.page.title()+"/"+self.dpage.config.archive.replace("%(counter)d", str(counter)))
-			using_counter = True
+		elif(self.dpage.config.using_year):
+			year = self.dpage.toarchive[0].mintimestamp.year
+			page = pywikibot.Page(self.site, self.dpage.page.title()+"/"+self.dpage.config.archive.replace("%(year)d", str(year)))
 		else:
 			page = pywikibot.Page(self.site, self.dpage.page.title()+"/"+self.dpage.config.archive)
-			using_counter = False
 
 		if not page.exists() or page.text == "":
 			page.text += self.dpage.config.archiveheader
 
 		archived = False
 		for i in range(len(self.dpage.toarchive)):
-			if self.dpage.config.using_year or not self.dpage.config.threads and len(page.text) < self.str2bytes(self.dpage.config.maxarchivesize) or self.dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(self.dpage.config.maxarchivesize):
+			if self.dpage.config.using_year:
+				if '\n'.join(self.dpage.toarchive[0].content) in page.text:
+					self.dpage.toarchive.pop(0)
+				elif self.dpage.toarchive[0].mintimestamp.year != year:
+					break
+				else:
+					archived = True
+					if i == 0:
+						page.text += "\n\n"
+					page.text += '\n'.join(self.dpage.toarchive[0].content)+"\n"
+					self.dpage.toarchive.pop(0)
+					x += 1
+
+			elif not self.dpage.config.threads and len(page.text) < self.str2bytes(self.dpage.config.maxarchivesize) or self.dpage.config.threads and self.threads_count(page.text) < self.parse_mas_config(self.dpage.config.maxarchivesize):
 				if '\n'.join(self.dpage.toarchive[0].content) in page.text:
 					self.dpage.toarchive.pop(0)
 				else:
@@ -296,7 +313,7 @@ class ThanatosTask:
 
 			else:
 				counter += 1
-				return page, x, counter, archived
+				break
 		return page, x, counter, archived
 
 
@@ -327,7 +344,7 @@ class ThanatosTask:
 				comment = create_comment.comment([self.comments[config.lang+"00"]+" yhden "+self.comments[config.lang+"02"]+" [["+self.dpage.page.title()+"]]"])
 			if data[0].text != '\n'.join(self.dpage.text) and data[3]:
 				archives.append(data[0].title())
-				printlog("archiver: saving archive "+self.dpage.page.title()+"/"+self.dpage.config.archive.replace("%(counter)d", str(counter)))
+				printlog("archiver: saving archive "+data[0].title())
 				wikipedia_worker.savepage(data[0], data[0].text, comment)
 				counter = data[2]
 			elif data[2] > counter:
@@ -395,7 +412,7 @@ class ThanatosTask:
 		for template in self.template_names:
 			self.template_name = template
 			pages = self.getpages()
-			#pages = [pywikibot.Page(self.site, "Keskustelu wikiprojektista:Urheilu")]
+			#pages = [pywikibot.Page(self.site, "")]
 			#self.template_page = pywikibot.Page(self.site, self.template_name)
 			for page in pages:
 				if page.title() in self.ignore:
